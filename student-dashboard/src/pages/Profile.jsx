@@ -2,17 +2,17 @@ import { User, Mail, Phone, Book, MapPin } from 'lucide-react';
 
 export default function Profile() {
   const profileData = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+1 234 567 890',
+    name: 'Ashiq',
+    email: 'ash@gmail.com',
+    phone: '+91 984XXXXXXX',
     major: 'Computer Science',
-    location: 'New York, USA',
+    location: 'India',
     education: {
-      university: 'Tech University',
-      graduationYear: '2025',
-      gpa: '3.8'
+      university: 'Sri Eshwar',
+      graduationYear: '2027',
+      gpa: '8.2'
     },
-    skills: ['React', 'Node.js', 'Python', 'Data Structures', 'Algorithms']
+    skills: ['React', 'Node.js', 'JavaScript','Typescript','Ethereum','Solidity' ,'Python', 'Data Structures', 'Algorithms']
   };
 
   return (

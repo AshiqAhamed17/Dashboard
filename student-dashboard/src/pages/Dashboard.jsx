@@ -1,32 +1,37 @@
-import { Card } from '@tremor/react';
-import { useState, useEffect } from 'react';
+import { Card } from "@tremor/react";
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
   const [githubStats, setGithubStats] = useState(null);
   const [leetcodeStats, setLeetcodeStats] = useState(null);
+  const [codeforcesStats, setCodeforcesStats] = useState(null);
 
-  // Simulated data - replace with actual API calls
   useEffect(() => {
     setGithubStats({
-      repos: 12,
-      contributions: 450,
-      followers: 25
+      repos: 49,
+      contributions: 300,
+      followers: 16,
     });
-    
+
     setLeetcodeStats({
-      solved: 150,
-      ranking: 50000,
-      contestRating: 1500
+      solved: 330,
+      ranking: 255432,
+      contestRating: 1446,
+    });
+
+    setCodeforcesStats({
+      solved: 76,
+      rating: 973,
     });
   }, []);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Welcome back, Student!</h1>
-      
+    <div className="space-y-6 text-cyan-600">
+      <h1 className="text-2xl font-bold">Welcome back!</h1>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="bg-gray-700 p-6">
-          <h3 className="text-lg font-semibold mb-4">GitHub Statistics</h3>
+          <h3 className="text-lg font-semibold mb-4">GitHub Stats</h3>
           {githubStats && (
             <div className="space-y-2">
               <p>Repositories: {githubStats.repos}</p>
@@ -48,13 +53,26 @@ export default function Dashboard() {
         </Card>
 
         <Card className="bg-gray-700 p-6">
+          <h3 className="text-lg font-semibold mb-4 ">CodeForces Progress</h3>
+          {codeforcesStats && (
+            <div className="space-y-2">
+              <p>Problems Solved: {codeforcesStats.solved}</p>
+              <p>Contest Rating: {codeforcesStats.rating}</p>
+            </div>
+          )}
+        </Card>
+
+        <Card className="bg-gray-700 p-6">
           <h3 className="text-lg font-semibold mb-4">Academic Overview</h3>
           <div className="space-y-2">
-            <p>Current GPA: 3.8</p>
-            <p>Credits Completed: 90</p>
+            <p>Current GPA: 8.2</p>
             <p>Major: Computer Science</p>
           </div>
         </Card>
+
+        
+
+        
       </div>
     </div>
   );
