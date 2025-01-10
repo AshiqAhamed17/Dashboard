@@ -1,5 +1,6 @@
 import { Card } from "@tremor/react";
 import { useEffect, useState } from "react";
+import axios from 'axios';
 
 export default function Dashboard() {
   const [githubStats, setGithubStats] = useState(null);
@@ -7,22 +8,36 @@ export default function Dashboard() {
   const [codeforcesStats, setCodeforcesStats] = useState(null);
 
   useEffect(() => {
-    setGithubStats({
-      repos: 49,
-      contributions: 300,
-      followers: 16,
-    });
+    const fetchGithubStats = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/github');
+        setGithubStats(response.data);
+      } catch (error) {
+        console.error('Error fetching GitHub stats:', error);
+      }
+    };
 
-    setLeetcodeStats({
-      solved: 330,
-      ranking: 255432,
-      contestRating: 1446,
-    });
+    const fetchLeetcodeStats = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/leetcode');
+        setLeetcodeStats(response.data);
+      } catch (error) {
+        console.error('Error fetching LeetCode stats:', error);
+      }
+    };
 
-    setCodeforcesStats({
-      solved: 76,
-      rating: 973,
-    });
+    const fetchCodeforcesStats = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/codeforces');
+        setCodeforcesStats(response.data);
+      } catch (error) {
+        console.error('Error fetching Codeforces stats:', error);
+      }
+    };
+
+    fetchGithubStats();
+    fetchLeetcodeStats();
+    fetchCodeforcesStats();
   }, []);
 
   return (
@@ -30,6 +45,7 @@ export default function Dashboard() {
       <h1 className="text-2xl font-bold">WELCOME BACK!</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* GitHub Stats Card */}
         <Card className="bg-gray-700 p-6">
           <h3 className="text-lg font-semibold mb-4 text-yellow-400">GitHub Stats</h3>
           {githubStats && (
@@ -41,17 +57,21 @@ export default function Dashboard() {
           )}
         </Card>
 
+        {/* LeetCode Stats Card */}
         <Card className="bg-gray-700 p-6">
           <h3 className="text-lg font-semibold mb-4 text-yellow-400">LeetCode Progress</h3>
           {leetcodeStats && (
             <div className="space-y-2 text-white">
               <p>Problems Solved: {leetcodeStats.solved}</p>
               <p>Global Ranking: {leetcodeStats.ranking}</p>
-              <p>Contest Rating: {leetcodeStats.contestRating}</p>
+              <p>Acceptance Rate: {leetcodeStats.acceptanceRate}%</p>
+              <p>Contribution Points: {leetcodeStats.contributionPoints}</p>
+              <p>Reputation: {leetcodeStats.reputation}</p>
             </div>
           )}
         </Card>
 
+        {/* CodeForces Stats Card */}
         <Card className="bg-gray-700 p-6">
           <h3 className="text-lg font-semibold mb-4 text-yellow-400">CodeForces Progress</h3>
           {codeforcesStats && (
@@ -62,6 +82,7 @@ export default function Dashboard() {
           )}
         </Card>
 
+        {/* Academic Overview Card */}
         <Card className="bg-gray-700 p-6">
           <h3 className="text-lg font-semibold mb-4 text-yellow-400">Academic Overview</h3>
           <div className="space-y-2 text-white">
@@ -69,10 +90,6 @@ export default function Dashboard() {
             <p>Major: Computer Science</p>
           </div>
         </Card>
-
-        
-
-        
       </div>
     </div>
   );
