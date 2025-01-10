@@ -9,14 +9,10 @@ const port = 3000;
 
 app.use(cors());
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 app.get('/api/github', async (req, res) => {
     try {
       const username = 'AshiqAhamed17';
       const response = await axios.get(`https://api.github.com/users/${username}`, {
-        headers: {
-          'Authorization': `token ${GITHUB_TOKEN}`
-        }
       });
       const { public_repos, followers, contributions } = response.data;
       res.json({
