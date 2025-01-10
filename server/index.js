@@ -1,18 +1,21 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const dotenv = require('dotenv');
+dotenv.config();
+
 const app = express();
 const port = 3000;
 
 app.use(cors());
 
-const GITHUB_TOKEN = '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';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 app.get('/api/github', async (req, res) => {
     try {
       const username = 'AshiqAhamed17';
       const response = await axios.get(`https://api.github.com/users/${username}`, {
         headers: {
-          'Authorization': `token ${GITHUB_TOKEN}` // Add token here
+          'Authorization': `token ${GITHUB_TOKEN}`
         }
       });
       const { public_repos, followers, contributions } = response.data;
@@ -58,7 +61,7 @@ app.get('/api/leetcode', async (req, res) => {
 // CodeForces Stats Route
 app.get('/api/codeforces', async (req, res) => {
   try {
-    const username = 'AshiqAhamed'; // Replace with your Codeforces username
+    const username = 'AshiqAhamed';
     const response = await axios.get(`https://codeforces.com/api/user.status?handle=${username}`);
     const solved = response.data.result.filter(problem => problem.verdict === 'OK').length;
     const rating = response.data.result[0]?.author?.rating || 'Not Available';
