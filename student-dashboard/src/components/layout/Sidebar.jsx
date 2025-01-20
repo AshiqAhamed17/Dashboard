@@ -3,7 +3,7 @@ import { LayoutDashboard, User, Code, BookOpen } from 'lucide-react';
 
 export default function Sidebar() {
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
     { icon: User, label: 'Profile', path: '/profile' },
     { icon: Code, label: 'Coding Stats', path: '/coding' },
     { icon: BookOpen, label: 'Academic', path: '/academic' },

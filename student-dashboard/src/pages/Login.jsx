@@ -12,7 +12,7 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Add authentication logic here
-    navigate('/');
+    navigate('/dashboard');
   };
 
   return (
