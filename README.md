@@ -26,6 +26,15 @@ A **Personalized Student Dashboard** is a web application that aggregates and di
 
 ---
 
+## **Features To Implement** ##
+- Coding stats page (Problem Solving page) -> Like neetcode.io
+- Enhance Dashboard page further
+
+- Maybe create a EC2 VM for the server/index.js
+- Add Auth
+
+---
+
 ## **Folder Structure**
 
 ### **Frontend**

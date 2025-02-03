@@ -11,7 +11,6 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add authentication logic here
     navigate('/dashboard');
   };
 
@@ -20,7 +19,7 @@ export default function Login() {
       <div className="max-w-md w-full space-y-8 bg-gray-800 p-8 rounded-lg shadow-lg">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-            Sign in to your account
+            Sign In
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
