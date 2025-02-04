@@ -7,16 +7,19 @@ export default function Dashboard() {
   const [githubStats, setGithubStats] = useState(null);
   const [leetcodeStats, setLeetcodeStats] = useState(null);
   const [codeforcesStats, setCodeforcesStats] = useState(null);
+  const [codeChefStats, setCodeChefStats] = useState(null);
 
   const [loading, setLoading] = useState({
     github: true,
     leetcode: true,
     codeforces: true,
+    codechef: true,
   });
   const [error, setError] = useState({
     github: null,
     leetcode: null,
     codeforces: null,
+    codechef: null,
   });
 
   useEffect(() => {
@@ -61,9 +64,22 @@ export default function Dashboard() {
       }
     };
 
+    const fetchCodeChefStats = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/codechef");
+        setCodeChefStats(response.data);
+      } catch (error) {
+        setError((prev) => ({ ...prev, codechef: "Failed to load CodeChef stats." })); // Fix error state
+      } finally {
+        setLoading((prev) => ({ ...prev, codechef: false })); // Fix loading state
+      }
+    };
+
+
     fetchGithubStats();
     fetchLeetcodeStats();
     fetchCodeforcesStats();
+    fetchCodeChefStats();
   }, []);
 
   // Data for line charts
@@ -82,11 +98,21 @@ export default function Dashboard() {
   const codeforcesData = [
     { name: "Rating", value: codeforcesStats?.CurrentRating || 0 },
     { name: "Max Rating", value: codeforcesStats?.MaxRating || 0 },
+    {name: "Problems Solved", value: codeforcesStats?.TotalSolved}
   ];
+
+  const codechefData = [
+    { name: "Rating", value: codeChefStats?.currentRating || 0 },
+    { name: "Max Rating", value: codeChefStats?.highestRating || 0 },
+    {name: "Problems Solved", value: codeChefStats?.globalRank}
+  ];
+  // Add fot other Coding profiles to calcualte the total solved count 
+  const totalSolved = leetcodeStats?.solved || 0;
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-900 text-cyan-400 p-8">
-      <h1 className="text-4xl font-bold text-center mb-10 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-cyan-500 to-blue-600">
+      <h1 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
         Welcome Back!
       </h1>
 
@@ -200,6 +226,9 @@ export default function Dashboard() {
                   Max Rank: <span className="font-bold">{codeforcesStats.MaxRank}</span>
                 </p>
                 <p>
+                  Total Solved: <span className="font-bold">{codeforcesStats.TotalSolved}</span>
+                </p>
+                <p>
                   Country: <span className="font-bold">{codeforcesStats.Country}</span>
                 </p>
                 <p>
@@ -221,6 +250,52 @@ export default function Dashboard() {
           )}
         </Card>
 
+        
+        {/* CodeChef Stats Card */}
+<Card className="bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-lg hover:shadow-xl transform transition duration-500 hover:-translate-y-2 border border-white/20">
+  <h3 className="text-xl font-semibold mb-4 text-gradient bg-clip-text bg-gradient-to-r from-green-400 to-teal-500">
+    CodeChef Progress
+  </h3>
+  {loading?.codechef ? (
+    <p>Loading...</p>
+  ) : error?.codechef ? (
+    <p className="text-red-500">{error.codechef}</p>
+  ) : codeChefStats ? (
+    <>
+      <div className="space-y-2 text-white">
+        <p>
+          Contest Rating:{" "}
+          <span className="font-bold">{codeChefStats.currentRating}</span>
+        </p>
+        <p>
+          Max Rating:{" "}
+          <span className="font-bold">{codeChefStats.highestRating}</span>
+        </p>
+        <p>
+          Global Rank:{" "}
+          <span className="font-bold">{codeChefStats.globalRank}</span>
+        </p>
+      </div>
+      {codechefData?.length > 0 ? (
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={codechefData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="value" stroke="#82ca9d" />
+          </LineChart>
+        </ResponsiveContainer>
+      ) : (
+        <p className="text-gray-400 text-sm">No rating data available.</p>
+      )}
+    </>
+  ) : (
+    <p className="text-gray-400 text-sm">No data found.</p>
+  )}
+</Card>
+
         {/* Academic Overview Card */}
         <Card className="bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-lg hover:shadow-xl transform transition duration-500 hover:-translate-y-2 border border-white/20">
           <h3 className="text-xl font-semibold mb-4 text-gradient bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">
@@ -235,6 +310,22 @@ export default function Dashboard() {
             </p>
           </div>
         </Card>
+
+        {/* Testing */}
+        <Card className="bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-lg hover:shadow-xl transform transition duration-500 hover:-translate-y-2 border border-white/20">
+          <h3 className="text-xl font-semibold mb-4 text-gradient bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">
+            Total Solved
+          </h3>
+          <div className="space-y-2 text-white">
+            <p>
+              Total Solved: <span className="font-bold">{totalSolved}</span>
+            </p>
+          
+          </div>
+        </Card>
+        
+
+
       </div>
     </div>
   );

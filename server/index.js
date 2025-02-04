@@ -64,13 +64,14 @@ app.get("/api/codeforces", async (req, res) => {
       `https://codeforces.com/api/user.info?handles=${username}`
     );
     const userData = response.data.result[0];
-    const { handle, country, rating, maxRating, maxRank, organization } = userData;
+    const { handle, country, rating, maxRating, maxRank, totalSolved, organization } = userData;
 
     res.json({
       User: handle,
       CurrentRating: rating,
       MaxRating: maxRating,
       MaxRank: maxRank,
+      TotalSolved: totalSolved,
       Country: country,
       Organization: organization,
     });
@@ -79,6 +80,34 @@ app.get("/api/codeforces", async (req, res) => {
     res.status(500).send("Error fetching Codeforces data");
   }
 });
+
+// Testing CodeChef
+
+app.get("/api/codechef", async (req, res) => {
+  try {
+    const username = "ashiq_17";
+    const response = await axios.get(
+      `https://codechef-api.vercel.app/handle/${username}`
+    );
+    const {
+      currentRating,
+      highestRating,
+      globalRank,
+      countryRank,
+      stars
+    } = response.data;
+
+    res.json({
+      rating: currentRating,
+      highestRating,
+      globalRank,
+      countryRank,
+      stars,
+    });
+  } catch (error) {
+    res.status(500).send("Error fetching CodeChef data");
+  }
+})
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
