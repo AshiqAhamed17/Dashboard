@@ -1,4 +1,4 @@
-import { User, Mail, Phone, Book, MapPin } from 'lucide-react';
+import {  Mail, Phone, Book, MapPin } from 'lucide-react';
 
 export default function Profile() {
   const profileData = {
