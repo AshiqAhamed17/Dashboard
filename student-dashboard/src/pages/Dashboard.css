@@ -1,0 +1,62 @@
+.dashboard {
+  min-height: 100vh;
+  background: linear-gradient(to top right, #1a202c, #2d3748, #1a202c);
+  color: #38b2ac;
+  padding: 2rem;
+}
+
+.dashboard-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 3rem;
+  background: linear-gradient(to right, #4299e1, #805ad5, #d53f8c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.stats-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+  transition: transform 0.5s, box-shadow 0.5s;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 6px 12px rgba(255, 255, 255, 0.3);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.github-title {
+  background: linear-gradient(to right, #f6e05e, #ed8936);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stats p {
+  color: white;
+  margin: 0.5rem 0;
+}
+
+.stats span {
+  font-weight: bold;
+}
+
+.error-text {
+  color: red;
+}
