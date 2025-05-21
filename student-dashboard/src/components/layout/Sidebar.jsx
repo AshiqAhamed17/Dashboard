@@ -1,4 +1,4 @@
-import { BookOpen, Code, LayoutDashboard, User } from "lucide-react";
+import { BookOpen, Code, FileText, LayoutDashboard, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Sidebar() {
@@ -7,6 +7,7 @@ export default function Sidebar() {
     { icon: User, label: "Profile", path: "/profile" },
     { icon: Code, label: "Coding Stats", path: "/coding" },
     { icon: BookOpen, label: "Resources", path: "/resources" },
+    { icon: FileText, label: "Notion", path: "/notion" },
   ];
 
   return (
