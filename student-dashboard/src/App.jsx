@@ -1,9 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './components/layout/Layout';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
-import Login from './pages/Login';
-import Coding from './pages/Coding';
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Layout from "./components/layout/Layout";
+import Coding from "./pages/Coding";
+import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
+import Resources from "./pages/Resources";
 //path="/login"
 function App() {
   return (
@@ -11,9 +12,10 @@ function App() {
       <Routes>
         <Route index element={<Login />} />
         <Route path="/" element={<Layout />}>
-          <Route path='dashboard' element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
           <Route path="coding" element={<Coding />} />
+          <Route path="resources" element={<Resources />} />
         </Route>
       </Routes>
     </Router>

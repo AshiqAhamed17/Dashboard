@@ -1,12 +1,12 @@
-import { Link } from 'react-router-dom';
-import { LayoutDashboard, User, Code, BookOpen } from 'lucide-react';
+import { BookOpen, Code, LayoutDashboard, User } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Sidebar() {
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-    { icon: User, label: 'Profile', path: '/profile' },
-    { icon: Code, label: 'Coding Stats', path: '/coding' },
-    { icon: BookOpen, label: 'Academic', path: '/academic' },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: User, label: "Profile", path: "/profile" },
+    { icon: Code, label: "Coding Stats", path: "/coding" },
+    { icon: BookOpen, label: "Resources", path: "/resources" },
   ];
 
   return (
