@@ -28,9 +28,9 @@ import {
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { Radar } from "react-chartjs-2";
-import Lightbox from "react-image-lightbox";
-import "react-image-lightbox/style.css";
 import Masonry from "react-masonry-css";
+import { Lightbox } from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -1092,10 +1092,15 @@ const Profile = () => {
       {/* Lightbox */}
       {lightboxOpen && selectedProject && (
         <Lightbox
-          mainSrc={selectedProject.image}
-          onCloseRequest={() => setLightboxOpen(false)}
-          imageTitle={selectedProject.name}
-          imageCaption={selectedProject.description}
+          open={lightboxOpen}
+          close={() => setLightboxOpen(false)}
+          slides={[
+            {
+              src: selectedProject.image,
+              title: selectedProject.name,
+              description: selectedProject.description,
+            },
+          ]}
         />
       )}
     </div>
