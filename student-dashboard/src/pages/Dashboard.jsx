@@ -79,18 +79,62 @@ PlatformStats.propTypes = {
   trend: PropTypes.number,
 };
 
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [platformData, setPlatformData] = useState({
     leetcode: null,
-    github: null,
     codeforces: null,
     codechef: null,
   });
+  const [lastUpdated, setLastUpdated] = useState(null);
 
-  const fetchPlatformData = async () => {
+  const getCachedData = () => {
+    try {
+      const cached = localStorage.getItem("platformData");
+      const timestamp = localStorage.getItem("lastUpdated");
+
+      if (cached && timestamp) {
+        const data = JSON.parse(cached);
+        const lastUpdate = new Date(parseInt(timestamp));
+        const now = new Date();
+
+        // Check if cache is still valid (less than 24 hours old)
+        if (now - lastUpdate < CACHE_DURATION) {
+          return { data, lastUpdate };
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error("Error reading cache:", error);
+      return null;
+    }
+  };
+
+  const saveToCache = (data) => {
+    try {
+      localStorage.setItem("platformData", JSON.stringify(data));
+      localStorage.setItem("lastUpdated", new Date().getTime().toString());
+    } catch (error) {
+      console.error("Error saving to cache:", error);
+    }
+  };
+
+  const fetchPlatformData = async (forceRefresh = false) => {
     try {
       setLoading(true);
+
+      // Check cache first if not forcing refresh
+      if (!forceRefresh) {
+        const cached = getCachedData();
+        if (cached) {
+          setPlatformData(cached.data);
+          setLastUpdated(cached.lastUpdate);
+          setLoading(false);
+          return;
+        }
+      }
 
       const fetchWithOptions = (url) => {
         return fetch(url, {
@@ -155,13 +199,7 @@ const Dashboard = () => {
       }
       const codechefData = await codechefResponse.json();
 
-      console.log("API Responses:", {
-        leetcode: leetcodeData,
-        codeforces: codeforcesData,
-        codechef: codechefData,
-      });
-
-      setPlatformData({
+      const newData = {
         leetcode: {
           totalSolved: leetcodeData.solved || 0,
           ranking: leetcodeData.ranking || 0,
@@ -192,31 +230,43 @@ const Dashboard = () => {
           countryRank: codechefData.countryRank || 0,
           stars: codechefData.stars || 0,
         },
-      });
+      };
+
+      // Save to cache
+      saveToCache(newData);
+      setPlatformData(newData);
+      setLastUpdated(new Date());
     } catch (error) {
       console.error("Error fetching platform data:", error);
-      // Set default values when there's an error
-      setPlatformData({
-        leetcode: {
-          totalSolved: 0,
-          ranking: 0,
-          acceptanceRate: 0,
-          contributionPoints: 0,
-        },
-        codeforces: {
-          rating: 0,
-          maxRating: 0,
-          rank: "Unrated",
-          problemsSolved: 0,
-        },
-        codechef: {
-          rating: 0,
-          highestRating: 0,
-          globalRank: 0,
-          countryRank: 0,
-          stars: 0,
-        },
-      });
+      // Try to load from cache if fetch fails
+      const cached = getCachedData();
+      if (cached) {
+        setPlatformData(cached.data);
+        setLastUpdated(cached.lastUpdate);
+      } else {
+        // Set default values if no cache available
+        setPlatformData({
+          leetcode: {
+            totalSolved: 0,
+            ranking: 0,
+            acceptanceRate: 0,
+            contributionPoints: 0,
+          },
+          codeforces: {
+            rating: 0,
+            maxRating: 0,
+            rank: "Unrated",
+            problemsSolved: 0,
+          },
+          codechef: {
+            rating: 0,
+            highestRating: 0,
+            globalRank: 0,
+            countryRank: 0,
+            stars: 0,
+          },
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -304,10 +354,22 @@ const Dashboard = () => {
           <h1 className="text-2xl font-bold">Coding Profile Overview</h1>
           <p className="text-muted-foreground">
             Your coding journey across platforms
+            {lastUpdated && (
+              <span className="ml-2 text-sm">
+                (Last updated: {lastUpdated.toLocaleString()})
+              </span>
+            )}
           </p>
         </div>
-        <Button variant="outline" onClick={fetchPlatformData}>
-          Refresh Stats
+        <Button
+          variant="outline"
+          onClick={() => fetchPlatformData(true)}
+          className="flex items-center gap-2"
+        >
+          <span>Refresh Stats</span>
+          {loading && (
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+          )}
         </Button>
       </div>
 
