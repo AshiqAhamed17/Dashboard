@@ -8,10 +8,7 @@ const port = process.env.PORT || 3000;
 // CORS configuration
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? ["https://your-vercel-domain.vercel.app"] // Replace with your Vercel domain
-        : "http://localhost:5173", // Vite's default port
+    origin: "*", // Allow all origins in development
     methods: ["GET", "POST"],
     credentials: true,
   })
