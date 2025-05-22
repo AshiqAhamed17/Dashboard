@@ -42,7 +42,7 @@ import {
 } from "recharts";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
-import config from '../config';
+import config from "../config";
 
 // Platform-specific components
 const PlatformStats = ({ title, icon: Icon, stats, trend }) => (
@@ -106,23 +106,34 @@ const Dashboard = () => {
 
       // Fetch GitHub data
       const githubResponse = await fetch(`${config.apiUrl}/api/github`);
+      if (!githubResponse.ok)
+        throw new Error(`GitHub API error: ${githubResponse.status}`);
       const githubData = await githubResponse.json();
 
       // Fetch LeetCode data
       const leetcodeResponse = await fetch(`${config.apiUrl}/api/leetcode`);
+      if (!leetcodeResponse.ok)
+        throw new Error(`LeetCode API error: ${leetcodeResponse.status}`);
       const leetcodeData = await leetcodeResponse.json();
 
       // Fetch CodeForces data
       const codeforcesResponse = await fetch(`${config.apiUrl}/api/codeforces`);
+      if (!codeforcesResponse.ok)
+        throw new Error(`CodeForces API error: ${codeforcesResponse.status}`);
       const codeforcesData = await codeforcesResponse.json();
 
       // Fetch CodeChef data
       const codechefResponse = await fetch(`${config.apiUrl}/api/codechef`);
+      if (!codechefResponse.ok)
+        throw new Error(`CodeChef API error: ${codechefResponse.status}`);
       const codechefData = await codechefResponse.json();
 
-      console.log("LeetCode Data:", leetcodeData);
-      console.log("CodeForces Data:", codeforcesData);
-      console.log("CodeChef Data:", codechefData);
+      console.log("API Responses:", {
+        github: githubData,
+        leetcode: leetcodeData,
+        codeforces: codeforcesData,
+        codechef: codechefData,
+      });
 
       setPlatformData({
         github: {
@@ -163,6 +174,29 @@ const Dashboard = () => {
       });
     } catch (error) {
       console.error("Error fetching platform data:", error);
+      // Set default values when there's an error
+      setPlatformData({
+        github: { followers: 0, repositories: 0, contributions: 0 },
+        leetcode: {
+          totalSolved: 0,
+          ranking: 0,
+          acceptanceRate: 0,
+          contributionPoints: 0,
+        },
+        codeforces: {
+          rating: 0,
+          maxRating: 0,
+          rank: "Unrated",
+          problemsSolved: 0,
+        },
+        codechef: {
+          rating: 0,
+          highestRating: 0,
+          globalRank: 0,
+          countryRank: 0,
+          stars: 0,
+        },
+      });
     } finally {
       setLoading(false);
     }
