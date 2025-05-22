@@ -19,7 +19,6 @@ const Checkbox = React.forwardRef(({ className, ...props }, ref) => (
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ));
-
 Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
 export { Checkbox };

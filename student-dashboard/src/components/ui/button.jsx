@@ -1,7 +1,7 @@
-import { forwardRef } from "react";
+import * as React from "react";
 import { cn } from "../../lib/utils";
 
-const Button = forwardRef(
+const Button = React.forwardRef(
   ({ className, variant = "default", size = "default", ...props }, ref) => {
     return (
       <button
@@ -16,10 +16,11 @@ const Button = forwardRef(
               variant === "outline",
             "bg-secondary text-secondary-foreground hover:bg-secondary/80":
               variant === "secondary",
-            "bg-transparent hover:bg-accent hover:text-accent-foreground":
-              variant === "ghost",
-            "bg-transparent hover:bg-accent text-accent-foreground":
+            "hover:bg-accent hover:text-accent-foreground": variant === "ghost",
+            "bg-background hover:bg-accent hover:text-accent-foreground":
               variant === "link",
+          },
+          {
             "h-10 py-2 px-4": size === "default",
             "h-9 px-3": size === "sm",
             "h-11 px-8": size === "lg",
@@ -32,6 +33,7 @@ const Button = forwardRef(
     );
   }
 );
+
 Button.displayName = "Button";
 
 export { Button };
