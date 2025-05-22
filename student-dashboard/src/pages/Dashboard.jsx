@@ -104,28 +104,67 @@ const Dashboard = () => {
     try {
       setLoading(true);
 
+      const fetchWithOptions = (url) => {
+        return fetch(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          mode: "cors",
+        });
+      };
+
       // Fetch GitHub data
-      const githubResponse = await fetch(`${config.apiUrl}/api/github`);
-      if (!githubResponse.ok)
-        throw new Error(`GitHub API error: ${githubResponse.status}`);
+      const githubResponse = await fetchWithOptions(
+        `${config.apiUrl}/api/github`
+      );
+      if (!githubResponse.ok) {
+        throw new Error(
+          `GitHub API error: ${
+            githubResponse.status
+          } - ${await githubResponse.text()}`
+        );
+      }
       const githubData = await githubResponse.json();
 
       // Fetch LeetCode data
-      const leetcodeResponse = await fetch(`${config.apiUrl}/api/leetcode`);
-      if (!leetcodeResponse.ok)
-        throw new Error(`LeetCode API error: ${leetcodeResponse.status}`);
+      const leetcodeResponse = await fetchWithOptions(
+        `${config.apiUrl}/api/leetcode`
+      );
+      if (!leetcodeResponse.ok) {
+        throw new Error(
+          `LeetCode API error: ${
+            leetcodeResponse.status
+          } - ${await leetcodeResponse.text()}`
+        );
+      }
       const leetcodeData = await leetcodeResponse.json();
 
       // Fetch CodeForces data
-      const codeforcesResponse = await fetch(`${config.apiUrl}/api/codeforces`);
-      if (!codeforcesResponse.ok)
-        throw new Error(`CodeForces API error: ${codeforcesResponse.status}`);
+      const codeforcesResponse = await fetchWithOptions(
+        `${config.apiUrl}/api/codeforces`
+      );
+      if (!codeforcesResponse.ok) {
+        throw new Error(
+          `CodeForces API error: ${
+            codeforcesResponse.status
+          } - ${await codeforcesResponse.text()}`
+        );
+      }
       const codeforcesData = await codeforcesResponse.json();
 
       // Fetch CodeChef data
-      const codechefResponse = await fetch(`${config.apiUrl}/api/codechef`);
-      if (!codechefResponse.ok)
-        throw new Error(`CodeChef API error: ${codechefResponse.status}`);
+      const codechefResponse = await fetchWithOptions(
+        `${config.apiUrl}/api/codechef`
+      );
+      if (!codechefResponse.ok) {
+        throw new Error(
+          `CodeChef API error: ${
+            codechefResponse.status
+          } - ${await codechefResponse.text()}`
+        );
+      }
       const codechefData = await codechefResponse.json();
 
       console.log("API Responses:", {

@@ -8,19 +8,26 @@ const port = process.env.PORT || 3000;
 // CORS configuration
 app.use(
   cors({
-    origin: [
-      "https://student-dashboard-ashiq.vercel.app",
-      "http://localhost:5173",
-    ],
-    methods: ["GET", "POST"],
+    origin: "*", // Allow all origins during development
+    methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
 // Add error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
+  console.error("Error details:", {
+    message: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method,
+  });
+  res.status(500).json({
+    error: "Something went wrong!",
+    message: err.message,
+    path: req.path,
+  });
 });
 
 app.get("/api/github", async (req, res) => {
