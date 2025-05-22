@@ -47,24 +47,24 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.get("/api/github", async (req, res) => {
-  try {
-    const username = "AshiqAhamed17";
-    const response = await axios.get(
-      `https://api.github.com/users/${username}`,
-      {}
-    );
-    const { public_repos, followers, contributions } = response.data;
-    res.json({
-      repos: public_repos,
-      followers,
-      contributions,
-    });
-  } catch (error) {
-    console.error("Error fetching GitHub data:", error);
-    res.status(500).send("Error fetching GitHub data");
-  }
-});
+// app.get("/api/github", async (req, res) => {
+//   try {
+//     const username = "AshiqAhamed17";
+//     const response = await axios.get(
+//       `https://api.github.com/users/${username}`,
+//       {}
+//     );
+//     const { public_repos, followers, contributions } = response.data;
+//     res.json({
+//       repos: public_repos,
+//       followers,
+//       contributions,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching GitHub data:", error);
+//     res.status(500).send("Error fetching GitHub data");
+//   }
+// });
 
 app.get("/api/leetcode", async (req, res) => {
   try {

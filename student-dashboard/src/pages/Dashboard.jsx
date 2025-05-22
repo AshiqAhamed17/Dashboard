@@ -1,28 +1,16 @@
 import {
-  Activity,
   ArrowDownRight,
   ArrowUpRight,
   Award,
-  Calendar,
-  Clock,
   Code2,
-  GitCommit,
-  GitFork,
-  Github,
-  GitPullRequest,
   Star,
   Target,
   TrendingUp,
   Trophy,
-  Users,
 } from "lucide-react";
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
   Cell,
   Legend,
@@ -116,23 +104,6 @@ const Dashboard = () => {
         });
       };
 
-      // Fetch GitHub data
-      const githubResponse = await fetchWithOptions(
-        `${config.apiUrl}/api/github`
-      );
-      if (!githubResponse.ok) {
-        const errorText = await githubResponse.text();
-        console.error("GitHub API Error:", {
-          status: githubResponse.status,
-          statusText: githubResponse.statusText,
-          error: errorText,
-        });
-        throw new Error(
-          `GitHub API error: ${githubResponse.status} - ${errorText}`
-        );
-      }
-      const githubData = await githubResponse.json();
-
       // Fetch LeetCode data
       const leetcodeResponse = await fetchWithOptions(
         `${config.apiUrl}/api/leetcode`
@@ -185,18 +156,12 @@ const Dashboard = () => {
       const codechefData = await codechefResponse.json();
 
       console.log("API Responses:", {
-        github: githubData,
         leetcode: leetcodeData,
         codeforces: codeforcesData,
         codechef: codechefData,
       });
 
       setPlatformData({
-        github: {
-          followers: githubData.followers || 0,
-          repositories: githubData.repos || 0,
-          contributions: githubData.contributions || 0,
-        },
         leetcode: {
           totalSolved: leetcodeData.solved || 0,
           ranking: leetcodeData.ranking || 0,
@@ -232,7 +197,6 @@ const Dashboard = () => {
       console.error("Error fetching platform data:", error);
       // Set default values when there's an error
       setPlatformData({
-        github: { followers: 0, repositories: 0, contributions: 0 },
         leetcode: {
           totalSolved: 0,
           ranking: 0,
@@ -369,23 +333,6 @@ const Dashboard = () => {
             {
               label: "Contribution Points",
               value: platformData.leetcode?.contributionPoints || 0,
-            },
-          ]}
-        />
-
-        {/* GitHub Stats */}
-        <PlatformStats
-          title="GitHub"
-          icon={Github}
-          stats={[
-            { label: "Followers", value: platformData.github?.followers || 0 },
-            {
-              label: "Repositories",
-              value: platformData.github?.repositories || 0,
-            },
-            {
-              label: "Contributions",
-              value: platformData.github?.contributions || 0,
             },
           ]}
         />
