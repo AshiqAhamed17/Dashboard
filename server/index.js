@@ -3,9 +3,19 @@ const axios = require("axios");
 const cors = require("cors");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-app.use(cors());
+// CORS configuration
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === "production"
+        ? ["https://your-vercel-domain.vercel.app"] // Replace with your Vercel domain
+        : "http://localhost:5173", // Vite's default port
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
 
 app.get("/api/github", async (req, res) => {
   try {
@@ -64,7 +74,15 @@ app.get("/api/codeforces", async (req, res) => {
       `https://codeforces.com/api/user.info?handles=${username}`
     );
     const userData = response.data.result[0];
-    const { handle, country, rating, maxRating, maxRank, totalSolved, organization } = userData;
+    const {
+      handle,
+      country,
+      rating,
+      maxRating,
+      maxRank,
+      totalSolved,
+      organization,
+    } = userData;
 
     res.json({
       User: handle,
@@ -89,13 +107,8 @@ app.get("/api/codechef", async (req, res) => {
     const response = await axios.get(
       `https://codechef-api.vercel.app/handle/${username}`
     );
-    const {
-      currentRating,
-      highestRating,
-      globalRank,
-      countryRank,
-      stars
-    } = response.data;
+    const { currentRating, highestRating, globalRank, countryRank, stars } =
+      response.data;
 
     res.json({
       rating: currentRating,
@@ -107,7 +120,7 @@ app.get("/api/codechef", async (req, res) => {
   } catch (error) {
     res.status(500).send("Error fetching CodeChef data");
   }
-})
+});
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

@@ -42,6 +42,7 @@ import {
 } from "recharts";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
+import config from '../config';
 
 // Platform-specific components
 const PlatformStats = ({ title, icon: Icon, stats, trend }) => (
@@ -104,25 +105,19 @@ const Dashboard = () => {
       setLoading(true);
 
       // Fetch GitHub data
-      const githubResponse = await fetch("http://localhost:3000/api/github");
+      const githubResponse = await fetch(`${config.apiUrl}/api/github`);
       const githubData = await githubResponse.json();
 
       // Fetch LeetCode data
-      const leetcodeResponse = await fetch(
-        "http://localhost:3000/api/leetcode"
-      );
+      const leetcodeResponse = await fetch(`${config.apiUrl}/api/leetcode`);
       const leetcodeData = await leetcodeResponse.json();
 
       // Fetch CodeForces data
-      const codeforcesResponse = await fetch(
-        "http://localhost:3000/api/codeforces"
-      );
+      const codeforcesResponse = await fetch(`${config.apiUrl}/api/codeforces`);
       const codeforcesData = await codeforcesResponse.json();
 
       // Fetch CodeChef data
-      const codechefResponse = await fetch(
-        "http://localhost:3000/api/codechef"
-      );
+      const codechefResponse = await fetch(`${config.apiUrl}/api/codechef`);
       const codechefData = await codechefResponse.json();
 
       console.log("LeetCode Data:", leetcodeData);
