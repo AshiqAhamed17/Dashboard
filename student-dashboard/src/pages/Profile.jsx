@@ -1,5 +1,17 @@
+import {
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LineElement,
+  PointElement,
+  RadialLinearScale,
+  Tooltip,
+} from "chart.js";
 import { motion } from "framer-motion";
 import {
+  BookOpen,
+  Briefcase,
+  Code,
   Download,
   Edit2,
   Github,
@@ -8,12 +20,17 @@ import {
   Mail,
   Plus,
   Trash2,
+  Trophy,
   Twitter,
   Upload,
   X,
 } from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
+import { Radar } from "react-chartjs-2";
+import Lightbox from "react-image-lightbox";
+import "react-image-lightbox/style.css";
+import Masonry from "react-masonry-css";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -32,12 +49,289 @@ import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import "../styles/profile.css";
 
+// Register ChartJS components
+ChartJS.register(
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend
+);
+
+// Achievement Badge Component
+const AchievementBadge = ({ title, description, icon, earned, progress }) => {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      className={`relative p-4 rounded-lg ${
+        earned ? "bg-primary/10" : "bg-muted/50"
+      }`}
+    >
+      <div className="flex items-center space-x-3">
+        <div
+          className={`p-2 rounded-full ${earned ? "bg-primary" : "bg-muted"}`}
+        >
+          {icon}
+        </div>
+        <div className="flex-1">
+          <h4 className="font-medium">{title}</h4>
+          <p className="text-sm text-muted-foreground">{description}</p>
+          {progress !== undefined && (
+            <div className="mt-2 h-1 bg-muted rounded-full">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+AchievementBadge.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  icon: PropTypes.node.isRequired,
+  earned: PropTypes.bool.isRequired,
+  progress: PropTypes.number,
+};
+
+// Skill Radar Chart Component
+const SkillRadarChart = ({ skills }) => {
+  const categories = {
+    Frontend: [
+      "React",
+      "Vue",
+      "Angular",
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "TypeScript",
+      "Tailwind",
+      "Bootstrap",
+    ],
+    Backend: [
+      "Node.js",
+      "Python",
+      "Java",
+      "PHP",
+      "Ruby",
+      "Express",
+      "Django",
+      "Spring",
+      "Laravel",
+      "SQL",
+      "NoSQL",
+      "MongoDB",
+      "PostgreSQL",
+      "MySQL",
+      "Redis",
+      "Firebase",
+      "SQLite",
+      "Cassandra",
+    ],
+    Web3: [
+      "Solidity",
+      "Ethers.js",
+      "Web3.js",
+      "Truffle",
+      "Hardhat",
+      "OpenZeppelin",
+      "ZeppelinOS",
+      "Foundry",
+      "Ethereum",
+      "Solana",
+      "Polygon",
+      "Avalanche",
+      "BSC",
+      "Fantom",
+      "Smart Contracts",
+    ],
+    DevOps: [
+      "Docker",
+      "Kubernetes",
+      "AWS",
+      "CI/CD",
+      "Linux",
+      "Jenkins",
+      "Terraform",
+      "Ansible",
+      "Nginx",
+    ],
+    Tools: [
+      "Git",
+      "VS Code",
+      "Figma",
+      "Jira",
+      "Postman",
+      "Webpack",
+      "Babel",
+      "ESLint",
+      "Prettier",
+      "Selenium",
+      "Slither",
+      "Burp Suite",
+      "Metasploit",
+      "Nmap",
+      "Wireshark",
+      "Fiddler",
+      "Charles",
+    ],
+  };
+
+  const calculateCategoryScore = (categorySkills, userSkills) => {
+    const matchingSkills = userSkills.filter((skill) =>
+      categorySkills.some((catSkill) =>
+        skill.name.toLowerCase().includes(catSkill.toLowerCase())
+      )
+    );
+    return (matchingSkills.length / categorySkills.length) * 100;
+  };
+
+  const data = {
+    labels: Object.keys(categories),
+    datasets: [
+      {
+        label: "Skill Distribution",
+        data: Object.values(categories).map((categorySkills) =>
+          calculateCategoryScore(categorySkills, skills)
+        ),
+        backgroundColor: "rgba(99, 102, 241, 0.2)",
+        borderColor: "rgba(99, 102, 241, 1)",
+        borderWidth: 2,
+        pointBackgroundColor: "rgba(99, 102, 241, 1)",
+        pointBorderColor: "#fff",
+        pointHoverBackgroundColor: "#fff",
+        pointHoverBorderColor: "rgba(99, 102, 241, 1)",
+      },
+    ],
+  };
+
+  const options = {
+    scales: {
+      r: {
+        angleLines: {
+          display: true,
+        },
+        suggestedMin: 0,
+        suggestedMax: 100,
+        ticks: {
+          display: false,
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const category = context.label;
+            const value = context.raw;
+            const categorySkills = categories[category];
+            const matchingSkills = skills.filter((skill) =>
+              categorySkills.some((catSkill) =>
+                skill.name.toLowerCase().includes(catSkill.toLowerCase())
+              )
+            );
+            return [
+              `${category}: ${value.toFixed(1)}%`,
+              `Matching skills: ${matchingSkills
+                .map((s) => s.name)
+                .join(", ")}`,
+            ];
+          },
+        },
+      },
+    },
+  };
+
+  return (
+    <div className="w-full h-[300px]">
+      <Radar data={data} options={options} />
+    </div>
+  );
+};
+
+SkillRadarChart.propTypes = {
+  skills: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      description: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+};
+
+// Project Card Component
+const ProjectCard = ({ project, onDelete, onImageClick }) => {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      className="relative overflow-hidden rounded-lg bg-card"
+    >
+      <div
+        className="aspect-video relative cursor-pointer"
+        onClick={() => onImageClick(project)}
+      >
+        <img
+          src={project.image || "https://via.placeholder.com/400x225"}
+          alt={project.name}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity duration-300">
+          <div className="absolute inset-0 p-4 flex flex-col justify-between">
+            <div>
+              <h3 className="text-white text-lg font-bold">{project.name}</h3>
+              <p className="text-white/80 text-sm mt-1">
+                {project.description}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {project.technologies?.map((tech) => (
+                <span
+                  key={tech}
+                  className="px-2 py-1 bg-white/20 rounded-full text-white text-xs"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <button
+        onClick={() => onDelete(project.id)}
+        className="absolute top-2 right-2 text-white hover:text-red-500"
+      >
+        <Trash2 size={16} />
+      </button>
+    </motion.div>
+  );
+};
+
+ProjectCard.propTypes = {
+  project: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    image: PropTypes.string,
+    technologies: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onImageClick: PropTypes.func.isRequired,
+};
+
 const SkillCard = ({ skill, onDelete }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
     <motion.div
-      className="relative w-full h-24 cursor-pointer perspective-1000"
+      className="relative w-full h-16 cursor-pointer perspective-1000"
       onHoverStart={() => setIsFlipped(true)}
       onHoverEnd={() => setIsFlipped(false)}
     >
@@ -47,12 +341,12 @@ const SkillCard = ({ skill, onDelete }) => {
         }`}
       >
         {/* Front of card */}
-        <div className="absolute w-full h-full backface-hidden bg-black rounded-lg p-3 flex items-center justify-center">
-          <h3 className="text-white text-lg font-bold">{skill.name}</h3>
+        <div className="absolute w-full h-full backface-hidden bg-black rounded-lg p-2 flex items-center justify-center">
+          <h3 className="text-white text-sm font-medium">{skill.name}</h3>
         </div>
         {/* Back of card */}
-        <div className="absolute w-full h-full backface-hidden bg-black rounded-lg p-3 rotate-y-180">
-          <p className="text-white text-sm line-clamp-2">{skill.description}</p>
+        <div className="absolute w-full h-full backface-hidden bg-black rounded-lg p-2 rotate-y-180">
+          <p className="text-white text-xs line-clamp-2">{skill.description}</p>
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -60,7 +354,7 @@ const SkillCard = ({ skill, onDelete }) => {
             }}
             className="absolute bottom-1 right-1 text-white hover:text-red-500"
           >
-            <Trash2 size={14} />
+            <Trash2 size={12} />
           </button>
         </div>
       </div>
@@ -146,11 +440,11 @@ const Profile = () => {
     bio: "Your bio goes here...",
     avatar: "https://via.placeholder.com/150",
     links: [
-      { id: 1, platform: "github", url: "https://github.com/yourusername" },
+      { id: 1, platform: "github", url: "https://github.com/AshiqAhamed17" },
       {
         id: 2,
         platform: "linkedin",
-        url: "https://linkedin.com/in/yourusername",
+        url: "https://linkedin.com/in/ashiq-n17",
       },
     ],
     skills: [
@@ -162,17 +456,37 @@ const Profile = () => {
       },
     ],
     projects: [
-      { id: 1, name: "Project 1", description: "Description of project 1" },
-      { id: 2, name: "Project 2", description: "Description of project 2" },
+      {
+        id: 1,
+        name: "Project 1",
+        description: "Description of project 1",
+        image: "https://via.placeholder.com/400x225",
+        technologies: ["React", "Node.js", "MongoDB"],
+      },
+      {
+        id: 2,
+        name: "Project 2",
+        description: "Description of project 2",
+        image: "https://via.placeholder.com/400x225",
+        technologies: ["Python", "Django", "PostgreSQL"],
+      },
     ],
   });
 
   const [newLink, setNewLink] = useState({ platform: "", url: "" });
   const [newSkill, setNewSkill] = useState({ name: "", description: "" });
-  const [newProject, setNewProject] = useState({ name: "", description: "" });
+  const [newProject, setNewProject] = useState({
+    name: "",
+    description: "",
+    technologies: [],
+  });
 
-  const [selectedAvatar, setSelectedAvatar] = useState(null);
-  const [selectedResume, setSelectedResume] = useState(null);
+  // State for lightbox
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  // State for project filters
+  const [selectedTechnology, setSelectedTechnology] = useState("all");
 
   useEffect(() => {
     // Load profile data from localStorage
@@ -213,7 +527,7 @@ const Profile = () => {
         { id: Date.now(), ...newProject },
       ];
       saveProfileData({ ...profileData, projects: newProjects });
-      setNewProject({ name: "", description: "" });
+      setNewProject({ name: "", description: "", technologies: [] });
     }
   };
 
@@ -233,12 +547,12 @@ const Profile = () => {
   const handleAvatarUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedAvatar(file);
-      // Here you would typically upload the file to your server
-      // For now, we'll just update the UI
       const reader = new FileReader();
       reader.onloadend = () => {
-        saveProfileData({ ...profileData, avatar: reader.result });
+        saveProfileData({
+          ...profileData,
+          avatar: reader.result,
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -247,9 +561,72 @@ const Profile = () => {
   const handleResumeUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedResume(file);
-      // Here you would typically upload the file to your server
+      saveProfileData({
+        ...profileData,
+        resume: file.name,
+      });
     }
+  };
+
+  // Get unique technologies from all projects
+  const allTechnologies = Array.from(
+    new Set(
+      profileData.projects.flatMap((project) => project.technologies || [])
+    )
+  );
+
+  // Filter projects based on selected technology
+  const filteredProjects =
+    selectedTechnology === "all"
+      ? profileData.projects
+      : profileData.projects.filter((project) =>
+          project.technologies?.includes(selectedTechnology)
+        );
+
+  // Remove the static achievements state and create a function to calculate achievements
+  const calculateAchievements = () => {
+    const skillCount = profileData.skills.length;
+    const projectCount = profileData.projects.length;
+    const hasCompleteProfile =
+      profileData.name !== "Your Name" &&
+      profileData.title !== "Your Title" &&
+      profileData.bio !== "Your bio goes here..." &&
+      profileData.links.length > 0;
+
+    return [
+      {
+        id: 1,
+        title: "Profile Complete",
+        description: "Complete your profile with all sections",
+        icon: <Trophy size={20} />,
+        earned: hasCompleteProfile,
+        progress: hasCompleteProfile ? 100 : 0,
+      },
+      {
+        id: 2,
+        title: "Skill Master",
+        description: `Add ${skillCount}/10 skills`,
+        icon: <Code size={20} />,
+        earned: skillCount >= 10,
+        progress: (skillCount / 10) * 100,
+      },
+      {
+        id: 3,
+        title: "Project Showcase",
+        description: `Add ${projectCount}/5 projects`,
+        icon: <Briefcase size={20} />,
+        earned: projectCount >= 5,
+        progress: (projectCount / 5) * 100,
+      },
+      {
+        id: 4,
+        title: "Learning Path",
+        description: "Complete 10 courses",
+        icon: <BookOpen size={20} />,
+        earned: false,
+        progress: 0,
+      },
+    ];
   };
 
   return (
@@ -303,7 +680,10 @@ const Profile = () => {
                     <EditableField
                       value={profileData.name}
                       onSave={(value) =>
-                        saveProfileData({ ...profileData, name: value })
+                        saveProfileData({
+                          ...profileData,
+                          name: value,
+                        })
                       }
                     />
                   </h1>
@@ -311,7 +691,10 @@ const Profile = () => {
                     <EditableField
                       value={profileData.title}
                       onSave={(value) =>
-                        saveProfileData({ ...profileData, title: value })
+                        saveProfileData({
+                          ...profileData,
+                          title: value,
+                        })
                       }
                     />
                   </p>
@@ -352,7 +735,10 @@ const Profile = () => {
                         placeholder="Platform (e.g., GitHub)"
                         value={newLink.platform}
                         onChange={(e) =>
-                          setNewLink({ ...newLink, platform: e.target.value })
+                          setNewLink({
+                            ...newLink,
+                            platform: e.target.value,
+                          })
                         }
                         className="bg-white text-black placeholder:text-gray-500"
                       />
@@ -360,7 +746,10 @@ const Profile = () => {
                         placeholder="URL"
                         value={newLink.url}
                         onChange={(e) =>
-                          setNewLink({ ...newLink, url: e.target.value })
+                          setNewLink({
+                            ...newLink,
+                            url: e.target.value,
+                          })
                         }
                         className="bg-white text-black placeholder:text-gray-500"
                       />
@@ -414,7 +803,10 @@ const Profile = () => {
                         const newLinks = profileData.links.filter(
                           (l) => l.id !== link.id
                         );
-                        saveProfileData({ ...profileData, links: newLinks });
+                        saveProfileData({
+                          ...profileData,
+                          links: newLinks,
+                        });
                       }}
                       className="hover:bg-destructive/10"
                     >
@@ -446,7 +838,10 @@ const Profile = () => {
                         placeholder="Skill Name"
                         value={newSkill.name}
                         onChange={(e) =>
-                          setNewSkill({ ...newSkill, name: e.target.value })
+                          setNewSkill({
+                            ...newSkill,
+                            name: e.target.value,
+                          })
                         }
                         className="bg-white text-black placeholder:text-gray-500"
                       />
@@ -473,19 +868,25 @@ const Profile = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                {profileData.skills.map((skill) => (
-                  <SkillCard
-                    key={skill.id}
-                    skill={skill}
-                    onDelete={(id) => {
-                      const newSkills = profileData.skills.filter(
-                        (s) => s.id !== id
-                      );
-                      saveProfileData({ ...profileData, skills: newSkills });
-                    }}
-                  />
-                ))}
+              <div className="space-y-6">
+                <SkillRadarChart skills={profileData.skills} />
+                <div className="grid grid-cols-2 gap-4">
+                  {profileData.skills.map((skill) => (
+                    <SkillCard
+                      key={skill.id}
+                      skill={skill}
+                      onDelete={(id) => {
+                        const newSkills = profileData.skills.filter(
+                          (s) => s.id !== id
+                        );
+                        saveProfileData({
+                          ...profileData,
+                          skills: newSkills,
+                        });
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -510,7 +911,10 @@ const Profile = () => {
                         placeholder="Project Name"
                         value={newProject.name}
                         onChange={(e) =>
-                          setNewProject({ ...newProject, name: e.target.value })
+                          setNewProject({
+                            ...newProject,
+                            name: e.target.value,
+                          })
                         }
                         className="bg-white text-black placeholder:text-gray-500"
                       />
@@ -521,6 +925,19 @@ const Profile = () => {
                           setNewProject({
                             ...newProject,
                             description: e.target.value,
+                          })
+                        }
+                        className="bg-white text-black placeholder:text-gray-500"
+                      />
+                      <Input
+                        placeholder="Technologies (comma-separated)"
+                        value={newProject.technologies.join(", ")}
+                        onChange={(e) =>
+                          setNewProject({
+                            ...newProject,
+                            technologies: e.target.value
+                              .split(",")
+                              .map((t) => t.trim()),
                           })
                         }
                         className="bg-white text-black placeholder:text-gray-500"
@@ -538,37 +955,86 @@ const Profile = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {profileData.projects.map((project) => (
-                  <Card key={project.id} className="border bg-card/50">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-medium text-foreground">
-                            {project.name}
-                          </h3>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {project.description}
-                          </p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            const newProjects = profileData.projects.filter(
-                              (p) => p.id !== project.id
-                            );
-                            saveProfileData({
-                              ...profileData,
-                              projects: newProjects,
-                            });
-                          }}
-                          className="hover:bg-destructive/10"
-                        >
-                          <Trash2 size={16} className="text-destructive" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                {/* Technology Filter */}
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setSelectedTechnology("all")}
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      selectedTechnology === "all"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {allTechnologies.map((tech) => (
+                    <button
+                      key={tech}
+                      onClick={() => setSelectedTechnology(tech)}
+                      className={`px-3 py-1 rounded-full text-sm ${
+                        selectedTechnology === tech
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {tech}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Masonry Grid */}
+                <Masonry
+                  breakpointCols={{
+                    default: 2,
+                    1100: 2,
+                    700: 1,
+                  }}
+                  className="flex -ml-4 w-auto"
+                  columnClassName="pl-4 bg-clip-padding"
+                >
+                  {filteredProjects.map((project) => (
+                    <div key={project.id} className="mb-4">
+                      <ProjectCard
+                        project={project}
+                        onDelete={(id) => {
+                          const newProjects = profileData.projects.filter(
+                            (p) => p.id !== id
+                          );
+                          saveProfileData({
+                            ...profileData,
+                            projects: newProjects,
+                          });
+                        }}
+                        onImageClick={(project) => {
+                          setSelectedProject(project);
+                          setLightboxOpen(true);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </Masonry>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Achievements Section */}
+          <Card className="border bg-card text-card-foreground shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">
+                Achievements
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4">
+                {calculateAchievements().map((achievement) => (
+                  <AchievementBadge
+                    key={achievement.id}
+                    title={achievement.title}
+                    description={achievement.description}
+                    icon={achievement.icon}
+                    earned={achievement.earned}
+                    progress={achievement.progress}
+                  />
                 ))}
               </div>
             </CardContent>
@@ -622,6 +1088,16 @@ const Profile = () => {
           </Card>
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightboxOpen && selectedProject && (
+        <Lightbox
+          mainSrc={selectedProject.image}
+          onCloseRequest={() => setLightboxOpen(false)}
+          imageTitle={selectedProject.name}
+          imageCaption={selectedProject.description}
+        />
+      )}
     </div>
   );
 };
