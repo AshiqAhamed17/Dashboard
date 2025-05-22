@@ -111,6 +111,7 @@ const Dashboard = () => {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
+          credentials: "include",
           mode: "cors",
         });
       };
@@ -120,10 +121,14 @@ const Dashboard = () => {
         `${config.apiUrl}/api/github`
       );
       if (!githubResponse.ok) {
+        const errorText = await githubResponse.text();
+        console.error("GitHub API Error:", {
+          status: githubResponse.status,
+          statusText: githubResponse.statusText,
+          error: errorText,
+        });
         throw new Error(
-          `GitHub API error: ${
-            githubResponse.status
-          } - ${await githubResponse.text()}`
+          `GitHub API error: ${githubResponse.status} - ${errorText}`
         );
       }
       const githubData = await githubResponse.json();
@@ -133,10 +138,14 @@ const Dashboard = () => {
         `${config.apiUrl}/api/leetcode`
       );
       if (!leetcodeResponse.ok) {
+        const errorText = await leetcodeResponse.text();
+        console.error("LeetCode API Error:", {
+          status: leetcodeResponse.status,
+          statusText: leetcodeResponse.statusText,
+          error: errorText,
+        });
         throw new Error(
-          `LeetCode API error: ${
-            leetcodeResponse.status
-          } - ${await leetcodeResponse.text()}`
+          `LeetCode API error: ${leetcodeResponse.status} - ${errorText}`
         );
       }
       const leetcodeData = await leetcodeResponse.json();
@@ -146,10 +155,14 @@ const Dashboard = () => {
         `${config.apiUrl}/api/codeforces`
       );
       if (!codeforcesResponse.ok) {
+        const errorText = await codeforcesResponse.text();
+        console.error("CodeForces API Error:", {
+          status: codeforcesResponse.status,
+          statusText: codeforcesResponse.statusText,
+          error: errorText,
+        });
         throw new Error(
-          `CodeForces API error: ${
-            codeforcesResponse.status
-          } - ${await codeforcesResponse.text()}`
+          `CodeForces API error: ${codeforcesResponse.status} - ${errorText}`
         );
       }
       const codeforcesData = await codeforcesResponse.json();
@@ -159,10 +172,14 @@ const Dashboard = () => {
         `${config.apiUrl}/api/codechef`
       );
       if (!codechefResponse.ok) {
+        const errorText = await codechefResponse.text();
+        console.error("CodeChef API Error:", {
+          status: codechefResponse.status,
+          statusText: codechefResponse.statusText,
+          error: errorText,
+        });
         throw new Error(
-          `CodeChef API error: ${
-            codechefResponse.status
-          } - ${await codechefResponse.text()}`
+          `CodeChef API error: ${codechefResponse.status} - ${errorText}`
         );
       }
       const codechefData = await codechefResponse.json();

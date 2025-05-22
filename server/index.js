@@ -8,12 +8,29 @@ const port = process.env.PORT || 3000;
 // CORS configuration
 app.use(
   cors({
-    origin: "*", // Allow all origins during development
+    origin: [
+      "https://dashboard-nine-mauve-97.vercel.app",
+      "http://localhost:5173",
+    ],
     methods: ["GET", "POST", "OPTIONS"],
-    credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   })
 );
+
+// Add headers middleware
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://dashboard-nine-mauve-97.vercel.app"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
 
 // Add error handling middleware
 app.use((err, req, res, next) => {
